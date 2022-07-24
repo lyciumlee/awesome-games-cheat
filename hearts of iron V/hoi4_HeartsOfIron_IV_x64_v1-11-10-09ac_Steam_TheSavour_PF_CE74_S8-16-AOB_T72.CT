@@ -1,0 +1,2407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable CheatEngineTableVersion="42">
+  <CheatEntries>
+    <CheatEntry>
+      <ID>5</ID>
+      <Description>"[X] &lt;== Hearts of Iron IV x64 v1.11.10 (09ac) Steam Script v8.16"</Description>
+      <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+      <Color>FF0000</Color>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{
+===========================================
+ Game Title    : Hearts of Iron IV  (x64)
+ Game Version  : 1.11.10 (09ac) (No Step Back)
+ Game Sponsor  : TheSaviour + PF (DLCs)
+ Process Name  : hoit4.exe
+ Relevant Info : 64bits/RTS/New Engine
+ Script Version: 8.16 (for x64)(AOB)
+ CE Version    : 7.4
+ Release date  : 09-Apr-2022
+ Author        : Recifense
+ History:
+ 07-Jun-2019: First Release for 64bits (v1.7.0)(s7.0)(CE68)
+ 14-Jun-2019: Fix for some crashes + improve time to load the table(s7.1)
+ 23-Jun-2019: Fix for some Weak Foe (Ships) (s7.2)
+ 23-Jun-2019: Release for v1.7.1-f8d7 (Beta) (s7.3)
+ 24-Jun-2019: Release for v1.7.1-87c8 (Beta) (s7.4)
+ 03-Sep-2019: Fix for GM (s7.5)(CE70)
+ 22-Sep-2019: A script patch due to CE70 issue (s7.6)
+ 13-Nov-2019: Release for v1.8.0-3241 (s7.7)
+ 14-Nov-2019: Release for v1.8.1-aa59 (s7.8)
+ 01-Dec-2019: Fix for identifying the player (s7.9)
+ 19-Dec-2019: Fix GM for ships (s7.10)
+ 07-Feb-2020: Release for v1.8.2-ce2f (s7.11)
+ 27-Feb-2020: Release for v1.9.0-ab9c + new features (s8.0)
+ 02-Mar-2020: Fix Manpower (s8.1)
+ 09-Mar-2020: Added 4 new features(s8.2)
+ 10-Apr-2020: Release for v1.9.1-6d23 (s8.3)
+ 06-May-2020: Release for v1.9.2-a73d (s8.4)
+ 04-Jun-2020: Release for v1.9.3-a7a4  (s8.5)
+ 16-Oct-2020: Release for v1.10.1-dd56 (s8.6) (Battle for the Bosporus)
+ 12-Nov-2020: Release for v1.10.2-f82d (s8.7)
+ 26-Nov-2020: Release for v1.10.3-aa89 (s8.8) (AOB)
+ 07-Feb-2021: Release for v1.10.4-8878 (s8.9) (AOB)
+ 15-Apr-2021: Release for v1.10.5-502a (s8.10)(AOB)
+ 26-Nov-2021: Release for v1.11.2-7844 (s8.11) (No Step Back)
+ 15-Dec-2021: Release for v1.11.4-b22c (s8.12)
+ 30-Jan-2022: Release for v1.11.5-7e1e (s8.13)(CE7.4)
+ 17-Feb-2022: Release for v1.11.7-98bf (s8.14)(CE7.4)
+ 03-Apr-2022: Release for v1.11.9-3f99  (s8.15) (not finished)
+ 09-Apr-2022: Release for v1.11.10-09ac (s8.16) + New feature
+ Features:
+ - Minimum Political Points  (700)
+ - Minimum Natural Resources (250)
+ - Construction in 1 day
+ - Research in 1 day
+ - Production in 1 day
+ - Move to adjacent region in 1 hour
+ - God Mode (Army/Fleet)
+ - Minimum Manpower per State (7000)
+ - Fill up player squadrons
+ - Weak Foe (s4.0)
+ - Minimum Base Stability   (80%)
+ - Minimum Base War Support (50%)
+ - Finish Focus in 1 day
+ - Refitting in 1 day
+ - Minimum Army/Navy/Air XP (268)
+ - Minimum Command Points   (68)
+ - Agency Construction in 1 day   (new) (s80)
+ - Agency Upgrade in 1 day        (new) (s80)
+ - Operative Recruitment in 1 day (new) (s80)
+ - Cipher Decrypting in 1 Day     (new) (s80)
+ - Deployment in 1 Day            (new) (s82)
+ - Network Creation in 1 Days     (new) (s82)
+ - Intel Operation in 1 Day       (new) (s82)
+ - Each Operation Phase in 3 Days (new) (s82)
+ - Each railway in 1 day          (new) (S8.16)
+ - Some Pointers
+===========================================
+}
+
+//{$STRICT}
+
+//=========================================
+// Checking CE version
+{$lua}
+  if(getCEVersion() &lt; 7.0) then
+    ShowMessage('Warning. CE version should be 7.0 or above')
+  end
+{$asm}
+
+//=========================================
+// Checking Selected Process
+{$lua}
+  if(process == nil) then
+    ShowMessage('No process was selected')
+  elseif (string.upper(process) ~= string.upper("hoi4.exe")) then
+    ShowMessage('Warning. Expected Process = hoi4.exe')
+  end
+{$asm}
+
+//=========================================
+// Checking if CE mono features are ON
+{$lua}
+--  monoAA_USEMONO(process,false)
+  if waitForPDB then --this way older CE versions are unaffected (By Dark Byte)
+    waitForPDB()
+  end
+{$asm}
+
+//=========================================
+// Definitions
+define(LUDO,"hoi4.exe")
+{
+define(MOHP,hoi4.exe+010FC00C) //===X#=======#=#
+define(MOCP,hoi4.exe+00A651F1) //====#=======X=#
+define(MOPP,hoi4.exe+00AA2C10) //=====#======X====#
+define(MPP1,hoi4.exe+00A65C59) //============X=#
+define(MPP2,hoi4.exe+00D04B64) //============X==
+define(MORP,hoi4.exe+00C18A65) //====#=======#=##
+define(MOFP,hoi4.exe+001F6CD5) //====#=======X=#
+
+define(MOSF,hoi4.exe+007C9BCF) //==#=#=======#=#=#
+define(MOAM,hoi4.exe+0095DB5A) //============#=#=#
+define(MAM1,hoi4.exe+0095D97E) //=====#======X=#=#
+
+define(MOPS,hoi4.exe+00CF8D30) //====#=======X=#
+define(GDMD,hoi4.exe+009EBC1A) //====#=======X=#
+define(GMDS,hoi4.exe+00B09E65) //====#=======X=X
+define(GDS2,hoi4.exe+00B00B3D) //====#=======#=#
+define(MOSR,hoi4.exe+00FE59C3) //============#=X
+define(MOMR,hoi4.exe+003B9C2B) //=====#==#=====#
+define(MOMM,hoi4.exe+008A9640) //=====#===#==#=# 2 1
+}
+// La Resistance DLC
+//define(MOAC,hoi4.exe+008237D2) //-----N====#==
+//define(MOAU,hoi4.exe+008238C5) //-----N====##=
+//define(MOOR,hoi4.exe+00823959) //-----N#===#==
+//define(MODP,hoi4.exe+00DBAFCC) //-----N====X=X
+//define(MONP,hoi4.exe+00BBE4F4) //-----N====#=#
+//define(MOOP,hoi4.exe+00B40725) //-----N#===#==
+//define(MOPH,hoi4.exe+00CF00DE) //-----N====#==
+// General
+//define(MUDP,hoi4.exe+00DEA9C5) //-----N===##==
+// No Step Back
+//define(MORW,hoi4.exe+011E9A46) //---------------N
+//=========================================
+// Constants used in the script (that can be changed)
+define(ctCE74,(float)7.4)
+
+//=========================================
+[ENABLE]
+//=========================================
+//LuaCall(CheckVersion())
+//=========================================
+// Check if script is compatible to this game version
+// If false the script will not be loaded
+
+AOBScanModule(MOHP,$process,41 8B 96 C4 01 00 00 48 8D 4C 24 30 E8 ?? ?? ?? ?? 48 8B D8 41 B1)
+AOBScanModule(MOCP,$process,8B 53 38 BD FF FF FF FF 03 D1 4C 89 74 24 30 89 53 38 48 BF ?? ??)
+AOBScanModule(MOPP,$process,44 8B 5F 38 45 03 DA 44 89 5F 38 45 85 C0 0F 84 ?? ?? ?? ?? 41 8D) //.
+AOBScanModule(MPP1,$process,8B 57 38 03 54 24 48 48 89 5C 24 50 89 57 38 45 85 C0 0F 84 ?? ??)
+AOBScanModule(MPP2,$process,44 89 43 38 44 3B C1 7C ?? 44 2B C1 48 8D 8B 98 00 00 00 44 89 43)
+AOBScanModule(MORP,$process,01 8F 24 01 00 00 48 8B 9F 30 01 00 00 48 63 87 3C 01 00 00 48 8D)
+AOBScanModule(MOFP,$process,3B 90 30 04 00 00 0F 8C ?? ?? ?? ?? 48 8B 53 10 48 8B 0D ?? ?? ??)
+
+AOBScanModule(MOSF,$process,48 8B 82 E0 01 00 00 49 8D 9F B8 03 00 00 8B 4B 08 8B B0 8C 00 00)
+AOBScanModule(MOAM,$process,41 39 9E 20 02 00 00 0F 8C ?? ?? ?? ?? 41 39 BE 08 01 00 00 0F 8F)
+AOBScanModule(MAM1,$process,41 89 96 20 02 00 00 EB ?? 41 8B 96 20 02 00 00 8B C2 85 D2 79 ??)
+AOBScanModule(MOPS,$process,48 8B 0A 48 83 C2 08 03 41 6C 49 3B D0 75 ?? C3 48 8B 51 30 33 C0)
+AOBScanModule(GDMD,$process,48 8B 81 38 03 00 00 45 0F B6 F1 49 63 F8 48 8B F1 48 63 DA 48 85)
+AOBScanModule(GMDS,$process,89 91 50 03 00 00 44 8B 81 C4 02 00 00 44 3B C0 41 0F 4F C0 85 D2)
+AOBScanModule(GDS2,$process,89 8D 54 03 00 00 85 C9 79 ?? 44 89 BD 54 03 00 00 EB ?? 41 3B CE)
+AOBScanModule(MOSR,$process,49 8B 86 20 01 00 00 48 8B 1C F0 48 8B 8B 00 01 00 00 E8 ?? ?? ??)
+AOBScanModule(MOMR,$process,8b 43 28 48 8b 5c 24 30 4f 8d 04 40 49 c1 e0 04 4c 03 47 10 41 01)
+AOBScanModule(MOMM,$process,48 8B 8E 40 04 00 00 48 8B 0C D9 E8 ?? ?? ?? ?? 48 8B C8 E8 ?? ?? ?? ?? 03 F8 48 FF C3 48 3B DD 7C ?? 48 8B 5C 24 30)
+// La Resistance DLC
+AOBScanModule(MOAC,$process,39 87 B4 00 00 00 7D ?? 40 38 35 ?? ?? ?? ?? 0F 84 ?? ?? ?? ?? 48)
+AOBScanModule(MOAU,$process,39 87 B4 00 00 00 7D ?? 40 38 35 ?? ?? ?? ?? 74 ?? 48 8B 05 ?? ??)
+AOBScanModule(MOOR,$process,89 8F D8 00 00 00 3B C8 7C ?? 89 B7 D8 00 00 00 FF 87 D4 00 00 00)
+AOBScanModule(MODP,$process,03 C3 89 47 1C 79 ?? 33 C0 89 47 1C 3B C2 75 ?? 48 8B 0D ?? ?? ??)
+AOBScanModule(MONP,$process,48 8B 4D 10 41 89 44 0E 20 48 FF C3 49 83 C6 38 48 3B DF 0F 85 ??)
+AOBScanModule(MOOP,$process,8B 43 34 39 43 30 7D ?? 49 8B 4D 10 E8 ?? ?? ?? ?? 48 8B C8 48 8D)
+AOBScanModule(MOPH,$process,83 B9 80 00 00 00 00 74 ?? 48 8B 05 ?? ?? ?? ?? 48 89 45 60 48 85)
+
+AOBScanModule(MUDP,$process,8B 47 5C 44 89 8F A0 00 00 00 39 47 58 0F 8D ?? ?? ?? ?? 80 3D ??)
+AOBScanModule(MORW,$process,4C 8B 46 28 8B 56 20 C6 44 24 28 00 48 8B 88 90 01 00 00 4D 8B 80)
+
+//=========================================
+alloc(MyCode,4096,$process)
+//=========================================
+// Declaration section
+label(_MonHumanPlayer)
+label(_BackMHP)
+label(_MonConstProg)
+label(_BackMCP)
+label(_MonProdProg)
+label(_BackMPP)
+label(_MonProdProg1)
+label(_BackPP1)
+label(_MonProdProg2)
+label(_BackPP2)
+label(_MonResearchProg)
+label(_BackMRP)
+label(_MonFocusProg)
+label(_BackMFP)
+
+label(_MonSelArmyFleet)
+label(_BackMSF)
+label(_MonArmyFleetMove)
+label(_BackMAM)
+label(_MonArmyFleetMove1)
+label(_BackAM1)
+label(_MonPlayerSquadrons)
+label(_BackMPS)
+label(_GodMode)
+label(_BackGMD)
+label(_GodModeS)
+label(_BackGMS)
+label(_GodModeS2)
+label(_BackGS2)
+
+label(_MonSelRegion)
+label(_BackMSR)
+label(_MonMinResource)
+label(_BackMMR)
+label(_MonMinMP)
+label(_BackMMM)
+
+label(_MonAgencyConst)
+label(_BackMAC)
+label(_MonAgencyUpg)
+label(_BackMAU)
+label(_MonOperRec)
+label(_BackMOR)
+label(_MonDecryptProg)
+label(_BackMDP)
+
+label(_MonUnitDeployProg)
+label(_BackMUP)
+
+label(_MonNetProg)
+label(_BackMNP)
+label(_MonOperProg)
+label(_BackMOP)
+label(_MonOperPhase)
+label(_BackOPH)
+
+label(iEnableMPP)
+label(iEnableMMR)
+label(iEnableMCP)
+label(iEnableMRP)
+label(iEnablePNP)
+label(iEnableMAM)
+label(iEnableGMD)
+label(iEnableMMM)
+label(iEnableMPS)
+label(iEnableMWF)
+label(iEnableMSY)
+label(iEnableMWS)
+label(iEnableMFP)
+label(iEnableMQR)
+label(iEnableMPX)
+label(iEnableMPC)
+label(iEnableMAC)
+label(iEnableMAU)
+label(iEnableMOR)
+label(iEnableMDP)
+label(iEnableMUP)
+label(iEnableMNP)
+label(iEnableMOP)
+label(iEnableOPH)
+label(iEnableMRW)
+
+label(pPlayer)
+label(pPlayer1)
+label(pPlayer2)
+label(pArmyFleet)
+label(pRegion)
+label(iPlayerID)
+label(aLast)
+
+label(pRAX)
+label(pRBX)
+label(pRCX)
+label(pRDX)
+label(pRDI)
+label(pRSI)
+label(pRBP)
+
+label(_MonHP00)
+label(_MonHP01)
+label(_MonHP02)
+label(_MonHP03)
+label(_MonHPN3)
+label(_MonHPA3)
+label(_MonHP04)
+label(_ExitMHP)
+label(_ExitMCP)
+label(_ExitMPP)
+label(_ExitPP1)
+label(_ExitPP2)
+label(_ExitMRP)
+label(_ExitMFP)
+label(_ExitMSF)
+label(_ExitMAM)
+label(_ExitAM1)
+label(_ExitMPS)
+label(_GodMD00)
+label(_ExitGMD)
+label(_GodMDS0)
+label(_GodMDS1)
+label(_ExitGMS)
+label(_ExitGS2)
+label(_ExitMSR)
+label(_ExitMMR)
+label(_MonMM00)
+label(_ExitMMM)
+label(_ExitMAC)
+label(_ExitMAU)
+label(_ExitMOR)
+
+label(iCount)
+
+//=========================================
+// Registering Symbols
+registersymbol(MyCode)
+registersymbol(iEnableMPP)
+registersymbol(iEnableMMR)
+registersymbol(iEnableMCP)
+registersymbol(iEnableMRP)
+registersymbol(iEnablePNP)
+registersymbol(iEnableMAM)
+registersymbol(iEnableGMD)
+registersymbol(iEnableMMM)
+registersymbol(iEnableMPS)
+registersymbol(iEnableMWF)
+registersymbol(iEnableMSY)
+registersymbol(iEnableMWS)
+registersymbol(iEnableMFP)
+registersymbol(iEnableMQR)
+registersymbol(iEnableMPX)
+registersymbol(iEnableMPC)
+registersymbol(iEnableMAC)
+registersymbol(iEnableMAU)
+registersymbol(iEnableMOR)
+registersymbol(iEnableMDP)
+registersymbol(iEnableMUP)
+registersymbol(iEnableMNP)
+registersymbol(iEnableMOP)
+registersymbol(iEnableOPH)
+registersymbol(iEnableMRW)
+registersymbol(iPlayerID)
+registersymbol(pPlayer)
+registersymbol(pPlayer1)
+registersymbol(pPlayer2)
+registersymbol(pArmyFleet)
+registersymbol(pRegion)
+registersymbol(aLast)
+
+registersymbol(pRAX)
+registersymbol(pRBX)
+registersymbol(pRCX)
+registersymbol(pRDX)
+registersymbol(pRDI)
+registersymbol(pRSI)
+registersymbol(pRBP)
+
+registersymbol(MOHP)
+registersymbol(MOCP)
+registersymbol(MOPP)
+registersymbol(MPP1)
+registersymbol(MPP2)
+registersymbol(MORP)
+registersymbol(MOFP)
+
+registersymbol(MOSF)
+registersymbol(MOAM)
+registersymbol(MAM1)
+registersymbol(MOPS)
+registersymbol(GDMD)
+registersymbol(GMDS)
+registersymbol(GDS2)
+
+registersymbol(MOSR)
+registersymbol(MOMR)
+registersymbol(MOMM)
+
+registersymbol(MOAC)
+registersymbol(MOAU)
+registersymbol(MOOR)
+registersymbol(MODP)
+
+registersymbol(MONP)
+registersymbol(MOOP)
+registersymbol(MOPH)
+
+registersymbol(MUDP)
+registersymbol(MORW)
+
+registersymbol(iCount)
+
+//=========================================
+MyCode:
+//========================================= 1.11.5 ok
+// - Find out the Human Player
+// - Minimum Political Points
+// - Minimum Command Points
+// - Minimum Army/Navy/Air XP
+// RCX is safe
+_MonHumanPlayer:
+ mov dword ptr [aLast],'_MHP'
+
+ xchg R15,R14
+
+ cmp r15,[pPlayer]
+ je _MonHPZZ
+
+ inc dword ptr [iCount]
+
+_MonHPZZ:
+ mov [pPlayer],r15
+ mov rcx,[r15+00000E78]
+ mov [pPlayer1],rcx
+ mov rcx,[r15+00000E70]
+ mov [pPlayer2],rcx
+ mov ecx,[r15+18]
+ and ecx,00ffffff
+ mov [iPlayerID],ecx
+
+ cmp dword ptr [iEnableMPP],0      // Political Power
+ je _MonHP00                       // Jump if feature is disabled
+
+ mov ecx,#700000
+ mov rdx,[r15+00000EA0]
+ cmp [rdx+000000c8],ecx
+ jns _MonHP00
+
+ mov [rdx+000000c8],ecx
+
+_MonHP00:
+ cmp dword ptr [iEnableMSY],0      // National Unity
+ je _MonHP01                       // Jump if feature is disabled
+
+ mov ecx,#800
+ cmp [r15+00000FA8],ecx
+ jns _MonHP01
+
+ mov [r15+00000FA8],ecx
+
+_MonHP01:
+ cmp dword ptr [iEnableMWS],0      // War Support
+ je _MonHP02                       // Jump if feature is disabled
+
+ mov ecx,#500
+ cmp [r15+00000FAC],ecx
+ jns _MonHP02
+
+ mov [r15+00000FAC],ecx
+
+_MonHP02:
+ cmp dword ptr [iEnableMPC],0      // Command Power
+ je _MonHP03                       // Jump if feature is disabled
+
+ mov ecx,#70000
+ cmp [r15+000001C4],ecx
+ jns _MonHP03
+
+ mov [r15+000001C4],ecx
+
+_MonHP03:
+ cmp dword ptr [iEnableMPX],0      // XPs
+ je _MonHP04                       // Jump if feature is disabled
+
+ mov rcx,#8781824                  // 8781824 = 268 x 32K
+
+ cmp [r15+000001E0],rcx
+ jns _MonHPN3
+
+ mov [r15+000001E0],rcx
+
+_MonHPN3:
+ cmp [r15+000001F8],rcx
+ jns _MonHPA3
+
+ mov [r15+000001F8],rcx
+
+_MonHPA3:
+ cmp [r15+00000210],rcx
+ jns _MonHP04
+
+ mov [r15+00000210],rcx
+
+_MonHP04:
+_ExitMHP:
+ xchg R15,R14
+
+ mov edx,[r14+000001C4]            // Original code
+ jmp _BackMHP                      // Back to main code
+
+//========================================= 1.11.5 ok
+// - Construction Progress (when day changes)
+_MonConstProg:
+ mov dword ptr [aLast],'_MCP'
+
+ cmp dword ptr [iEnableMCP],0
+ je _ExitMCP                       // Jump if feature is disabled
+
+ mov rdx,[rbx+28]
+ cmp rdx,[pPlayer1]
+ jne _ExitMCP
+
+ mov edx,[rbx+30]
+ cmp [rbx+38],edx
+ jns _ExitMCP
+
+ mov [rbx+38],edx
+
+_ExitMCP:
+ mov edx,[rbx+38]                  // Original code (get prog)
+ mov ebp,FFFFFFFF                  // Original code
+ jmp _BackMCP                      // Back to main code
+
+//========================================= 1.11.7 *
+// - Production Progress (airplanes, weapons, etc) (when day changes)
+_MonProdProg:
+ mov dword ptr [aLast],'_MPP'
+
+ cmp dword ptr [iEnablePNP],0
+ je _ExitMPP                       // Jump if feature is disabled
+
+ mov r11,[rdi+28]
+ cmp r11,[pPlayer1]
+ jne _ExitMPP
+
+ mov r11d,[rdi+30]
+ add r11d,r11d
+
+ cmp [rdi+38],r11d
+ jns _ExitMPP
+
+ mov [rdi+38],r11d
+
+_ExitMPP:
+ mov r11d,[rdi+38]                 // Original code (get prog)
+ add r11d,r10d                     // Original code
+ jmp _BackMPP                      // Back to main code
+
+//========================================= 1.11.5 ok
+// - Production Progress (ship) (when day changes)
+_MonProdProg1:
+ mov dword ptr [aLast],'_PP1'
+ push rbx
+
+ cmp dword ptr [iEnablePNP],0
+ je _ExitPP1                       // Jump if feature is disabled
+
+ mov rbx,[rdi+28]
+ cmp rbx,[pPlayer1]
+ jne _ExitPP1
+
+ mov ebx,[rdi+30]
+ add ebx,ebx
+
+ cmp [rdi+38],ebx
+ jns _ExitPP1
+
+ mov [rdi+38],ebx
+
+_ExitPP1:
+ pop rbx
+
+ mov edx,[rdi+38]                  // Original code (get prog)
+ add edx,[rsp+48]                  // Original code
+ jmp _BackPP1                      // Back to main code
+
+//========================================= 1.10.5 ok
+// - Refitting Progress (when day changes)
+_MonProdProg2:
+ mov dword ptr [aLast],'_PP2'
+
+ push rax
+
+ cmp dword ptr [iEnableMQR],0
+ je _ExitPP2                       // Jump if feature is disabled
+
+ mov rax,[rbx+28]
+ cmp rax,[pPlayer1]
+ jne _ExitPP2
+
+ cmp r8d,ecx
+ jns _ExitPP2
+
+ mov r8d,ecx
+
+_ExitPP2:
+ pop rax
+
+ mov [rbx+38],r8d                  // Original code(upd prog)
+ cmp r8d,ecx                       // Original code
+ jmp _BackPP2                      // Back to main code
+
+//========================================= 1.11.5 ok
+// - Research Progress (when day changes)
+_MonResearchProg:
+ mov dword ptr [aLast],'_MRP'
+
+ push rax
+
+ cmp dword ptr [iEnableMRP],0
+ je _ExitMRP                       // Jump if feature is disabled
+
+ mov rax,[rdi+000000D8]
+ cmp rax,[pPlayer2]
+ jne _ExitMRP
+
+ mov rax,[rdi+000000E0]
+ test rax,rax
+ jz _ExitMRP
+
+ mov eax,[rax+00000330]
+ add eax,eax
+ imul eax,eax,64
+ test eax,eax
+ js _ExitMRP
+
+ cmp [rdi+00000124],eax
+ jns _ExitMRP
+
+ mov [rdi+00000124],eax
+
+_ExitMRP:
+ pop rax
+
+ add [rdi+00000124],ecx            // Original code (upd prog)
+ jmp _BackMRP                      // Back to main code
+
+//========================================= 1.11.5 ok
+// - Finish focus in a day (when day changes)
+// RCX is safe and RBX = pFocus
+_MonFocusProg:
+ mov dword ptr [aLast],'_MFP'
+
+ cmp dword ptr [iEnableMFP],0
+ je _ExitMFP                       // Jump if feature is disabled
+
+ mov rcx,[rbx+10]
+ cmp rcx,[pPlayer]
+ jne _ExitMFP
+
+ mov ecx,[rax+00000430]
+
+ cmp [rbx+28],ecx
+ jns _ExitMFP
+
+ mov [rbx+28],ecx
+
+ mov edx,ecx
+
+_ExitMFP:
+ cmp edx,[rax+00000430]            // Original code (get val)
+ jmp _BackMFP                      // Back to main code
+
+//========================================= 1.11.5 *
+// - When Army/Fleet is selected
+_MonSelArmyFleet:
+ mov [pArmyFleet],rdx
+
+_ExitMSF:
+ mov rax,[rdx+000001E0]            // Original code (get pLocation)
+ jmp _BackMSF                      // Back to main code
+
+//========================================= 1.11.5 *
+// - Movement in 1 hour (When Army/Fleet is moving)
+_MonArmyFleetMove:
+ mov dword ptr [aLast],'_MFM'
+
+ push rax
+
+ cmp dword ptr [iEnableMAM],0
+ je _ExitMAM                       // Jump if feature is disabled
+
+ mov eax,[iPlayerID]
+ cmp eax,[r14+000001C8]
+ jne _ExitMAM
+
+ cmp [r14+00000220],ebx
+ jns _ExitMAM
+
+ mov [r14+00000220],ebx
+
+_ExitMAM:
+ pop rax
+
+ cmp [r14+00000220],ebx            // Original code (chk Move)
+ jmp _BackMAM                      // Back to main code
+
+//========================================= 1.11.5 *
+// - Movement in 1 hour (When Army/Fleet is moving during battle)
+_MonArmyFleetMove1:
+ mov dword ptr [aLast],'_FM1'
+
+ push rax
+
+ cmp dword ptr [iEnableMAM],0
+ je _ExitAM1                       // Jump if feature is disabled
+
+ mov eax,[iPlayerID]
+ cmp eax,[r14+000001C8]
+ jne _ExitAM1
+
+ cmp edx,r15d
+ jns _ExitAM1
+
+ mov edx,r15d
+
+_ExitAM1:
+ pop rax
+
+ mov [r14+00000220],edx            // Original code (upd Move)
+ jmp _BackAM1                      // Back to main code
+
+//========================================= 1.11.1 #
+// - All the time
+_MonPlayerSquadrons:
+ mov dword ptr [aLast],'_MPS'
+
+ push rax
+ push rbx
+ push rdx
+
+ mov rcx,[rdx]                     // Original code (get squadron)
+
+ cmp dword ptr [iEnableMPS],0
+ je _ExitMPS                       // Jump if feature is disabled
+
+ mov eax,[rcx+0000058C]
+ cmp eax,[iPlayerID]
+ jne _ExitMPS
+
+ mov eax,[rcx+74]
+ cmp eax,[rcx+6C]
+ js _ExitMPS
+ je _ExitMPS
+
+ mov [rcx+6C],eax
+ imul eax,eax,#1000
+
+ mov rbx,[rcx+000001A0]
+ test rbx,rbx
+ jz _ExitMPS
+
+ mov [rbx+10],eax
+
+ mov rbx,[rcx+000001B0]
+ test rbx,rbx
+ jz _ExitMPS
+
+ mov [rbx+08],eax
+
+_ExitMPS:
+ pop rdx
+ pop rbx
+ pop rax
+
+ add rdx,08                        // Original code
+ jmp _BackMPS                      // Back to main code
+
+//========================================= 1.11.5 *
+// - When in battle (army)
+// RAX, RSI and RBX are safe to use
+_GodMode:
+ mov dword ptr [aLast],'_GMD'
+
+ cmp dword ptr [iEnableGMD],0
+ je _GodMD00                       // Jump if feature is disabled
+
+ mov eax,[iPlayerID]
+ cmp eax,[rcx+000001C8]
+ jne _GodMD00
+
+ mov rbx,[rcx+000000D8]
+ test rbx,rbx
+ jz _ExitGMD
+
+ mov eax,[rbx+00000250]            // Organization
+ mov [rcx+000003AC],eax
+
+ mov eax,[ebx+00000254]            // HP
+ mov [rcx+000003A8],eax
+
+ xor eax,eax
+ mov [rcx+000003B8],eax
+ mov [rcx+000003BC],eax
+ mov [rcx+000003C0],eax
+
+ xor r8,r8
+ xor rdx,rdx
+ jmp _ExitGMD
+//==
+_GodMD00:
+ cmp dword ptr [iEnableMWF],0      // s4.0
+ je _ExitGMD                       // Jump if feature is disabled
+
+ test r15,r15
+ js _ExitGMD
+
+{$Try}
+ mov eax,[r15+000001C8]
+ jmp short _GMTryOK
+{$except}
+ mov eax,55555555
+
+_GMTryOK:
+ cmp eax,[iPlayerID]               // Chk if player is the attacker
+ jne _ExitGMD
+
+ mov r8d,[rcx+000003AC]
+
+ mov eax,[rcx+000003A8]
+ shr eax,1
+ cmp edx,eax
+ jns _ExitGMD
+
+ mov edx,eax
+
+_ExitGMD:
+ mov rax,[rcx+00000338]            // Original code
+ jmp _BackGMD                      // Back to main code
+
+//========================================= 1.11.5 #
+// - When in battle (ships)(strength)
+// RAX is safe to use
+_GodModeS:
+ mov dword ptr [aLast],'_GMS'
+
+ push rbp
+
+ mov rbp,rcx
+
+ cmp dword ptr [iEnableGMD],0
+ je _GodMDS0                       // Jump if feature is disabled
+
+ mov rax,[rbp+00000418]
+ mov eax,[rax+000001C8]
+ cmp eax,[iPlayerID]
+ jne _GodMDS0
+
+ mov eax,[rbp+000002C0]            // Organization
+ mov [rbp+00000354],eax
+
+ mov edx,[rbp+000002C4]            // Strength
+ mov [rbp+00000350],edx
+
+ mov eax,[rbp+0000043C]
+ cmp [rbp+00000438],eax            // Manpower
+ jns _ExitGMS
+
+ mov [rbp+00000438],eax
+
+ jmp _ExitGMS
+//==
+_GodMDS0:
+ cmp dword ptr [iEnableMWF],0      // s4.0
+ je _ExitGMS                       // Jump if feature is disabled
+
+ mov rax,[rbp+00000418]            // get fleet
+ test rax,rax
+ jz _ExitGMS
+
+ mov rax,[rax+00000260]
+ test rax,rax
+ jz _ExitGMS
+
+ mov eax,[rax]
+ cmp eax,[iPlayerID]
+ jne _ExitGMS
+
+ xor eax,eax
+ mov [rbp+00000354],eax
+
+ mov eax,[rbp+00000350]
+ shr eax,1
+ cmp eax,edx
+ jns _GodMDS1
+
+ mov edx,eax
+
+_GodMDS1:
+_ExitGMS:
+ mov rcx,rbp
+ pop rbp
+
+ mov [rcx+00000350],edx            // Original code (upd str)
+ jmp _BackGMS                      // Back to main code
+
+//========================================= 1.11.5 #
+// - When in battle (ships)(organization)
+// RAX is safe to use
+_GodModeS2:
+ mov dword ptr [aLast],'_GS2'
+
+ cmp dword ptr [iEnableGMD],0
+ je _ExitGS2                       // Jump if feature is disabled
+
+ mov rax,[rbp+00000418]
+ mov eax,[rax+000001C8]
+ cmp eax,[iPlayerID]
+ jne _ExitGS2
+
+ mov ecx,[rbp+000002C0]            // Organization
+ mov [rbp+00000354],ecx
+
+ mov eax,[rbp+000002C4]            // Strength
+ mov [rbp+00000350],eax
+
+ mov eax,[rbp+0000043C]
+ cmp [rbp+00000438],eax            // Manpower
+ jns _ExitGS2
+
+ mov [rbp+00000438],eax
+
+_ExitGS2:
+ mov [rbp+00000354],ecx            // Original code (upd org)
+ jmp _BackGS2                      // Back to main code
+
+//========================================= 1.11.1 *
+// - When a Province region is selected
+_MonSelRegion:
+ mov [pRegion],r14
+
+_ExitMSR:
+ mov rax,[r14+00000120]            // Original code (pInfras)
+ jmp _BackMSR                      // Back to main code
+
+//========================================= 1.11.5 ok
+// - Each hour
+_MonMinResource:
+ mov dword ptr [aLast],'_MMR'
+
+ cmp dword ptr [iEnableMMR],0
+ je _ExitMMR                       // Jump if feature is disabled
+
+ mov rax,[rsp+00000430]
+ test rax,rax
+ jz _ExitMMR
+
+ cmp rax,[rsp+00000478]
+ jne _ExitMMR
+
+// cmp rax,[qMinAddress]
+// js _ExitMMR
+// mov rax,[rax+48]
+
+ cmp rax,[pPlayer]
+ jne _ExitMMR
+
+ mov eax,#250000
+ cmp [rbx+28],eax
+ jns _ExitMMR
+
+ mov [rbx+28],eax
+
+_ExitMMR:
+ mov eax,[rbx+28]                  // Original code (get resource)
+ mov rbx,[rsp+30]                  // Original code
+ jmp _BackMMR                      // Back to main code
+
+qMinAddress:
+ dq 0000010000000000
+
+//========================================= 1.11.1 *
+// - All the time (Manpower)
+// RAX can be used
+_MonMinMP:
+ mov dword ptr [aLast],'_MMM'
+
+ mov rcx,[rsi+00000440]            // Original code (get list)
+ mov rcx,[rcx+rbx*8]               // Original code (get Province)
+
+ cmp dword ptr [iEnableMMM],0
+ je _ExitMMM                       // Jump if feature is disabled
+
+ cmp rsi,[pPlayer]
+ jne _ExitMMM
+
+ mov eax,#7000
+ cmp [rcx+00000650],eax
+ jns _MonMM00
+
+ mov [rcx+00000650],eax
+
+_MonMM00:
+_ExitMMM:
+ jmp _BackMMM                      // Back to main code
+
+//========================================= 1.10.4 *
+// - When const prog is updated (for La Resistance DLC)
+_MonAgencyConst:
+ mov dword ptr [aLast],'_MAC'
+
+ cmp r15,[pPlayer]
+ jne _ExitMAC
+
+ cmp dword ptr [iEnableMAC],0
+ je _ExitMAC                       // Jump if feature is disabled
+
+ cmp [rdi+000000B4],eax
+ jns _ExitMAC
+
+ mov [rdi+000000B4],eax
+
+_ExitMAC:
+ cmp [rdi+000000B4],eax            // Original code (chk prog)
+ jmp _BackMAC                      // Back to main code
+
+//========================================= 1.10.5 #
+// - When upgrade prog is updated (for La Resistance DLC)
+_MonAgencyUpg:
+ mov dword ptr [aLast],'_MAU'
+
+ cmp r15,[pPlayer]
+ jne _ExitMAU
+
+ cmp dword ptr [iEnableMAU],0
+ je _ExitMAU                       // Jump if feature is disabled
+
+ cmp [rdi+000000B4],eax
+ jns _ExitMAU
+
+ mov [rdi+000000B4],eax
+
+_ExitMAU:
+ cmp [rdi+000000B4],eax            // Original code (chk prog)
+ jmp _BackMAU                      // Back to main code
+
+//========================================= 1.10.4 *
+// - When operative recruitment prog is updated (for La Resistance DLC)
+_MonOperRec:
+ mov dword ptr [aLast],'_MOR'
+
+ cmp r15,[pPlayer]
+ jne _ExitMOR
+
+ cmp dword ptr [iEnableMOR],0
+ je _ExitMOR                       // Jump if feature is disabled
+
+ mov ecx,eax
+
+_ExitMOR:
+ mov [rdi+000000D8],ecx            // Original code (upd prog)
+ jmp _BackMOR                      // Back to main code
+
+//========================================= 1.11.1 *
+// - When Decrypting prog is updated (for La Resistance DLC)
+_MonDecryptProg:
+ mov dword ptr [aLast],'_MDP'
+ push rsi
+
+ cmp dword ptr [iEnableMDP],0
+ je _ExitMDP                       // Jump if feature is disabled
+
+ test rsi,rsi
+ jz _ExitMDP
+
+ mov rsi,[rsi+10]
+ cmp rsi,[pPlayer]
+ jne _ExitMDP
+
+ cmp eax,edx
+ jns _ExitMDP
+
+ mov eax,edx
+
+_ExitMDP:
+ pop rsi
+
+ add eax,ebx                       // Original code (calc prog)
+ mov [rdi+1C],eax                  // Original code (upd prog)
+ jmp _BackMDP                      // Back to main code
+
+//========================================= 1.10.4 *
+// - When Deployment progress is updated
+_MonUnitDeployProg:
+ mov dword ptr [aLast],'_MUP'
+
+ push rbx
+ push rcx
+ push rdx
+ push rdi
+ push rsi
+ push rbp
+
+ mov rsi,rdi
+
+ cmp dword ptr [iEnableMUP],0
+ je _ExitMUP                       // Jump if feature is disabled
+
+ cmp r15,[pPlayer]
+ jne _ExitMUP
+
+ mov eax,#1000
+ cmp [rsi+5C],eax                  // CMilitaryDeployment+5C
+ je _MonUD0X
+
+ mov rdi,[rsi+000000a8]            // CMilitaryDeploymentLine
+ test rdi,rdi
+ jz _ExitMUP
+
+ mov rdi,[rdi+38]                  // CMilitaryDeploymentConveyor
+ test rdi,rdi
+ jz _ExitMUP
+
+ mov rdi,[rdi+20]                  // CReferencedDivisionTemplate
+ test rdi,rdi
+ jz _ExitMUP
+
+ movzx rcx,word ptr [rdi+0000009c] // 1
+ test rcx,rcx
+ jz _ExitMUP
+
+ mov rbx,[rdi+00000090]
+ test rbx,rbx
+ jz _ExitMUP
+
+ cmp ecx,[rsi+3c]                  // 1
+ jne _ExitMUP
+
+ mov rdi,[rsi+30]                  // pList
+ imul rdx,rcx,00000018
+ add rdx,rdi                       // pLEnd
+
+_MonUD00:
+ mov rbp,[rbx]
+ mov eax,[rbx+08]
+
+ cmp rbp,[rdi]
+ je _MonUD01
+
+ lea rdi,[rdi+18]
+ cmp rdi,rdx
+ js _MonUD00
+
+ jmp _ExitMUP                  // Something wrong, exit.
+
+_MonUD01:
+ mov [rdi+10],eax
+
+ mov rdi,[rsi+30]
+ lea rbx,[rbx+10]
+ loop _MonUD00
+
+ mov eax,#1000
+ mov [rsi+5C],eax
+
+_MonUD0X:
+ dec eax
+
+ cmp [rsi+58],eax
+ jns _ExitMUP
+
+ mov [rsi+58],eax
+
+_ExitMUP:
+ pop rbp
+ pop rsi
+ pop rdi
+ pop rdx
+ pop rcx
+ pop rbx
+
+ mov eax,[rdi+5C]                  // Original code
+ mov [rdi+000000A0],r9d            // Original code
+ jmp _BackMUP                      // Back to main code
+
+//========================================= 1.11.1 *
+// - When updating Networking Creation Progress
+_MonNetProg:
+ mov dword ptr [aLast],'_MNP'
+
+ cmp dword ptr [iEnableMNP],0
+ je _ExitMNP                       // Jump if feature is disabled
+
+ test eax,eax
+ jz _ExitMNP
+
+ test r15,r15
+ jz _ExitMNP
+
+ mov ecx,[r15+00000088]
+ cmp ecx,[iPlayerID]
+ jne _ExitMNP
+
+ mov ecx,#100000
+ cmp eax,ecx
+ jns _ExitMNP
+
+ mov eax,ecx
+
+_ExitMNP:
+ mov rcx,[rbp+10]                  // Original code
+ mov [r14+rcx+20],eax              // Original code (upd prog)
+ jmp _BackMNP                      // Back to main code
+
+//========================================= 1.10.4 *
+// - When operation Progress is updated
+_MonOperProg:
+ mov dword ptr [aLast],'_MOP'
+
+ cmp dword ptr [iEnableMOP],0
+ je _ExitMOP                       // Jump if feature is disabled
+
+ mov rax,[rbx+48]
+ cmp rax,[pPlayer]
+ jne _ExitMOP
+
+ mov eax,[rbx+34]
+ cmp eax,#1000
+ js _ExitMOP
+
+ mov eax,#-1000
+ add eax,[rbx+34]
+
+ cmp [rbx+30],eax
+ jns _ExitMOP
+
+ mov [rbx+30],eax
+
+_ExitMOP:
+ mov eax,[rbx+34]                  // Original code (get prog)
+ cmp [rbx+30],eax                  // Original code
+ jmp _BackMOP                      // Back to main code
+
+//========================================= 1.10.4 #
+// - When operation phase is in Progress (When lookin at the Agency)
+// RAX is safe
+_MonOperPhase:
+ mov dword ptr [aLast],'_OPH'
+
+ cmp dword ptr [iEnableOPH],0
+ je _ExitOPH                       // Jump if feature is disabled
+
+ mov rax,[rcx+48]
+ cmp rax,[pPlayer]
+ jne _ExitOPH
+
+ cmp byte ptr [rcx+3a],01
+ je _ExitOPH
+
+ cmp dword ptr [rcx+00000080],00
+ je _ExitOPH
+
+ cmp dword ptr [rcx+0000010c],00
+ je _ExitOPH
+
+ movzx rax,word ptr [rcx+0000010c]
+
+ imul rax,rax,3
+
+ cmp [rcx+00000080],eax
+ js _ExitOPH
+
+ mov [rcx+00000080],eax
+
+_ExitOPH:
+ cmp dword ptr [rcx+00000080],00   // Original code (chk #days)
+ jmp _BackOPH                      // Back to main code
+
+//========================================= 1.11.10 (New)
+// - When construction Railways (during turn)
+// RCX/R8 are safe
+_MonRailWay:
+ mov dword ptr [aLast],'_MRW'
+
+ mov r8,[rsi+28]                   // Original code
+ mov edx,[rsi+20]                  // Original code
+
+ cmp dword ptr [iEnableMRW],0
+ je _ExitMRW                       // Jump if feature is disabled
+
+ cmp r8,[pPlayer1]
+ jne _ExitMRW
+
+ mov edx,#200
+
+_ExitMRW:
+ jmp _BackMRW                      // Back to main code
+
+//=========================================
+align 10,'='
+//=========================================
+ db '===============================&gt;'
+ db 'CE7.4 Script by Recifense 220409'
+//=========================================
+// Variables
+iEnableMPP:
+ dd 0
+iEnableMMR:
+ dd 0
+iEnableMCP:
+ dd 0
+iEnableMRP:
+ dd 0
+iEnablePNP:
+ dd 0
+iEnableMAM:
+ dd 0
+iEnableGMD:
+ dd 0
+iEnableMMM:
+ dd 0
+iEnableMPS:
+ dd 0
+iEnableMWF:
+ dd 0
+iEnableMSY:
+ dd 0
+iEnableMWS:
+ dd 0
+iEnableMFP:
+ dd 0
+iEnableMQR:
+ dd 0
+iEnableMPX:
+ dd 0
+iEnableMPC:
+ dd 0
+iEnableMAC:
+ dd 0
+iEnableMAU:
+ dd 0
+iEnableMOR:
+ dd 0
+iEnableMDP:
+ dd 0
+iEnableMUP:
+ dd 0
+iEnableMNP:
+ dd 0
+iEnableMOP:
+ dd 0
+iEnableOPH:
+ dd 0
+iEnableMRW:
+ dd 0
+iPlayerID:
+ dd #999999
+pPlayer:
+ dq MyCode
+pPlayer1:
+ dq MyCode
+pPlayer2:
+ dq MyCode
+pArmyFleet:
+ dq 0
+pRegion:
+ dq 0
+pRAX:
+ dq 0
+pRBX:
+ dq 0
+pRCX:
+ dq 0
+pRDX:
+ dq 0
+pRDI:
+ dq 0
+pRSI:
+ dq 0
+pRBP:
+ dq 0
+iCount:
+ dq 0
+aLast:
+ db 'CE74'
+
+//=========================================
+// Hacking Points
+MOHP:
+ jmp _MonHumanPlayer
+ nop
+ nop
+_BackMHP:
+
+MOCP:
+ jmp _MonConstProg
+ nop
+ nop
+ nop
+_BackMCP:
+
+MOPP:
+ jmp _MonProdProg
+ nop
+ nop
+_BackMPP:
+
+MPP1:
+ jmp _MonProdProg1
+ nop
+ nop
+_BackPP1:
+
+MPP2:
+ jmp _MonProdProg2
+ nop
+ nop
+_BackPP2:
+
+MORP:
+ jmp _MonResearchProg
+ nop
+_BackMRP:
+
+MOFP:
+ jmp _MonFocusProg
+ nop
+_BackMFP:
+
+MOSF:
+ jmp _MonSelArmyFleet
+ nop
+ nop
+_BackMSF:
+
+MOAM:
+ jmp _MonArmyFleetMove
+ nop
+ nop
+_BackMAM:
+
+MAM1:
+ jmp _MonArmyFleetMove1
+ nop
+ nop
+_BackAM1:
+
+MOPS:
+ jmp _MonPlayerSquadrons
+ nop
+ nop
+_BackMPS:
+
+GDMD:
+ jmp _GodMode
+ nop
+ nop
+_BackGMD:
+
+GMDS:
+ jmp _GodModeS
+ nop
+_BackGMS:
+
+GDS2:
+ jmp _GodModeS2
+ nop
+_BackGS2:
+
+MOSR:
+ jmp _MonSelRegion
+ nop
+ nop
+_BackMSR:
+
+MOMR:
+ jmp _MonMinResource
+ nop
+ nop
+ nop
+_BackMMR:
+
+MOMM:
+ jmp _MonMinMP
+ jmp _MonMinMP
+ nop
+_BackMMM:
+
+MOAC:
+ jmp _MonAgencyConst
+ nop
+_BackMAC:
+
+MOAU:
+ jmp _MonAgencyUpg
+ nop
+_BackMAU:
+
+MOOR:
+ jmp _MonOperRec
+ nop
+_BackMOR:
+
+MODP:
+ jmp _MonDecryptProg
+_BackMDP:
+
+MUDP:
+ jmp _MonUnitDeployProg
+ jmp _MonUnitDeployProg
+_BackMUP:
+
+MONP:
+ jmp _MonNetProg
+ nop
+ nop
+ nop
+ nop
+_BackMNP:
+
+MOOP:
+ jmp _MonOperProg
+ nop
+_BackMOP:
+
+MOPH:
+ jmp _MonOperPhase
+ nop
+ nop
+_BackOPH:
+
+MORW:
+ jmp _MonRailWay
+ nop
+ nop
+_BackMRW:
+
+//=========================================
+// Script for Restoring Original Codes
+[DISABLE]
+MOHP:
+// mov edx,[r14+000001C4]
+ db 41 8B 96 C4 01 00 00
+
+MOCP:
+// mov edx,[rbx+38]
+// mov ebp,FFFFFFFF
+ db 8B 53 38 BD FF FF FF FF
+
+MOPP:
+// mov r11d,[rdi+38]
+// add r11d,r10d
+ db 44 8B 5F 38 45 03 DA
+
+MPP1:
+// mov edx,[rdi+38]
+// add edx,[rsp+48]
+ db 8B 57 38 03 54 24 48
+
+MPP2:
+// mov [rbx+38],r8d
+// cmp r8d,ecx
+ db 44 89 43 38 44 3B C1
+
+MORP:
+// add [rdi+00000124],ecx
+ db 01 8F 24 01 00 00
+
+MOFP:
+// cmp edx,[rax+00000430]
+ db 3B 90 30 04 00 00
+
+MOSF:
+// mov rax,[rdx+000001E0]
+ db 48 8B 82 E0 01 00 00
+
+MOAM:
+// cmp [r14+00000220],ebx
+ db 41 39 9E 20 02 00 00
+
+MAM1:
+// mov [r14+00000220],edx
+ db 41 89 96 20 02 00 00
+
+MOPS:
+// mov rcx,[rdx]
+// add rdx,08
+ db 48 8B 0A 48 83 C2 08
+
+GDMD:
+// mov rax,[rcx+00000338]
+ db 48 8B 81 38 03 00 00
+
+GMDS:
+// mov [rcx+00000350],edx
+ db 89 91 50 03 00 00
+
+GDS2:
+// mov [rbp+00000354],ecx
+ db 89 8D 54 03 00 00
+
+MOSR:
+// mov rax,[r14+00000120]
+ db 49 8B 86 20 01 00 00
+
+MOMR:
+// mov eax,[rbx+28]
+// mov rbx,[rsp+30]
+ db 8b 43 28 48 8b 5c 24 30
+
+MOMM:
+// mov rcx,[rsi+00000440]
+// mov rcx,[rcx+rbx*8]
+ db 48 8B 8E 40 04 00 00 48 8B 0C D9
+
+MOAC:
+// cmp [rdi+000000B4],eax
+ db 39 87 B4 00 00 00
+
+MOAU:
+// cmp [rdi+000000B4],eax
+ db 39 87 B4 00 00 00
+
+MOOR:
+// mov [rdi+000000D8],ecx
+ db 89 8F D8 00 00 00
+
+MODP:
+// add eax,ebx
+// mov [rdi+1C],eax
+ db 03 C3 89 47 1C
+
+MUDP:
+// mov eax,[rsi+5C]
+// mov [rdi+000000A0],r9d
+ db 8B 47 5C 44 89 8F A0 00 00 00
+
+MONP:
+// mov rcx,[rbp+10]
+// mov [r14+rcx+20],eax
+ db 48 8B 4D 10 41 89 44 0E 20
+
+MOOP:
+// mov eax,[rbx+34]
+// cmp [rbx+30],eax
+ db 8B 43 34 39 43 30
+
+MOPH:
+// cmp dword ptr [rcx+00000080],00
+ db 83 B9 80 00 00 00 00
+
+MORW:
+// mov r8,[rsi+28]
+// mov edx,[rsi+20]
+ db 4C 8B 46 28 8B 56 20
+
+//=========================================
+// Unregistering Symbols
+unregistersymbol(MyCode)
+unregistersymbol(iEnableMPP)
+unregistersymbol(iEnableMMR)
+unregistersymbol(iEnableMCP)
+unregistersymbol(iEnableMRP)
+unregistersymbol(iEnablePNP)
+unregistersymbol(iEnableMAM)
+unregistersymbol(iEnableGMD)
+unregistersymbol(iEnableMMM)
+unregistersymbol(iEnableMPS)
+unregistersymbol(iEnableMWF)
+unregistersymbol(iEnableMSY)
+unregistersymbol(iEnableMWS)
+unregistersymbol(iEnableMFP)
+unregistersymbol(iEnableMQR)
+unregistersymbol(iEnableMPX)
+unregistersymbol(iEnableMPC)
+unregistersymbol(iEnableMAC)
+unregistersymbol(iEnableMAU)
+unregistersymbol(iEnableMOR)
+unregistersymbol(iEnableMDP)
+unregistersymbol(iEnableMUP)
+unregistersymbol(iEnableMNP)
+unregistersymbol(iEnableMOP)
+unregistersymbol(iEnableOPH)
+unregistersymbol(iEnableMRW)
+unregistersymbol(iPlayerID)
+unregistersymbol(pPlayer)
+unregistersymbol(pPlayer1)
+unregistersymbol(pPlayer2)
+unregistersymbol(pArmyFleet)
+unregistersymbol(pRegion)
+unregistersymbol(aLast)
+
+unregistersymbol(pRAX)
+unregistersymbol(pRBX)
+unregistersymbol(pRCX)
+unregistersymbol(pRDX)
+unregistersymbol(pRDI)
+unregistersymbol(pRSI)
+unregistersymbol(pRBP)
+
+unregistersymbol(MOHP)
+unregistersymbol(MOCP)
+unregistersymbol(MOPP)
+unregistersymbol(MPP1)
+unregistersymbol(MPP2)
+unregistersymbol(MORP)
+unregistersymbol(MOFP)
+
+unregistersymbol(MOSF)
+unregistersymbol(MOAM)
+unregistersymbol(MAM1)
+unregistersymbol(MOPS)
+unregistersymbol(GDMD)
+unregistersymbol(GMDS)
+unregistersymbol(GDS2)
+
+unregistersymbol(MOSR)
+unregistersymbol(MOMR)
+unregistersymbol(MOMM)
+
+unregistersymbol(MOSR)
+unregistersymbol(MOMR)
+unregistersymbol(MOMM)
+
+unregistersymbol(MOAC)
+unregistersymbol(MOAU)
+unregistersymbol(MOOR)
+unregistersymbol(MODP)
+
+unregistersymbol(MONP)
+unregistersymbol(MOOP)
+unregistersymbol(MOPH)
+
+unregistersymbol(MUDP)
+unregistersymbol(MORW)
+
+unregistersymbol(iCount)
+
+//=========================================
+dealloc(MyCode)
+//============= Scripts End ===============
+
+// ****************************************
+// NOTES
+// ****************************************
+{
+}
+</AssemblerScript>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>96</ID>
+          <Description>"[X] &lt;== Minimum Political Power"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMPP",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMPP",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>246</ID>
+          <Description>"[X] &lt;== Minimum Base Stability"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMSY",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMSY",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>247</ID>
+          <Description>"[X] &lt;== Minimum War Support"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMWS",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMWS",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>229</ID>
+          <Description>"[X] &lt;== Minimum Manpower per State"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMMM",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMMM",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>262</ID>
+          <Description>"[X] &lt;== Minimum Command Power"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMPC",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMPC",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>263</ID>
+          <Description>"[X] &lt;== Minimum Army/Navy/Air XP"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMPX",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMPX",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>97</ID>
+          <Description>"[X] &lt;== Minimum Natural Resources (***)"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMMR",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMMR",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>252</ID>
+          <Description>"[X] &lt;== Finish Focus in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMFP",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMFP",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>99</ID>
+          <Description>"[X] &lt;== Research in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMRP",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMRP",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>98</ID>
+          <Description>"[X] &lt;== Construction in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMCP",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMCP",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>100</ID>
+          <Description>"[X] &lt;== Production in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnablePNP",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnablePNP",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>258</ID>
+          <Description>"[X] &lt;== Refitting in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMQR",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMQR",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>101</ID>
+          <Description>"[X] &lt;== Movement to adjacent region in 1 Hour"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMAM",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMAM",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>102</ID>
+          <Description>"[X] &lt;== God Mode"</Description>
+          <Options moHideChildren="1" moDeactivateChildrenAsWell="1"/>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableGMD",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableGMD",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>245</ID>
+          <Description>"[X] &lt;== Weak Foe"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMWF",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMWF",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>235</ID>
+          <Description>"[X] &lt;== Fill up Player Squadrons"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMPS",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMPS",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>270</ID>
+          <Description>"[X] &lt;== Agency Construction in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMAC",1)
+memrec.Color = 0x00004000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMAC",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>272</ID>
+          <Description>"[X] &lt;== Agency Upgrade in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMAU",1)
+memrec.Color = 0x00004000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMAU",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>275</ID>
+          <Description>"[X] &lt;== Operative Recruitment in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMOR",1)
+memrec.Color = 0x00004000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMOR",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>279</ID>
+          <Description>"[X] &lt;== Cipher Decrypting in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMDP",1)
+memrec.Color = 0x00004000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMDP",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>286</ID>
+          <Description>"[X] &lt;== Unit Deployment  in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMUP",1)
+memrec.Color = 0x00004000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMUP",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>287</ID>
+          <Description>"[X] &lt;== Intel Network  in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMNP",1)
+memrec.Color = 0x00004000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMNP",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>289</ID>
+          <Description>"[X] &lt;== Intel Operation  in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMOP",1)
+memrec.Color = 0x00004000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMOP",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>297</ID>
+          <Description>"[X] &lt;== Each Operation Phase  in 3 Days (Select the Agency)"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableOPH",1)
+memrec.Color = 0x00004000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableOPH",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>303</ID>
+          <Description>"[X] &lt;== Each Railway Construction in 1 Day"</Description>
+          <Color>C08000</Color>
+          <VariableType>Auto Assembler Script</VariableType>
+          <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+writeInteger("iEnableMRW",1)
+memrec.Color = 0x00008000
+{$ASM}
+
+[disable]
+{$LUA}
+writeInteger("iEnableMRW",0)
+memrec.Color = 0x00c08000
+{$ASM}
+
+</AssemblerScript>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>228</ID>
+      <Description>"[X] &lt;== Table/Script Information"</Description>
+      <Options moHideChildren="1"/>
+      <Color>0000FF</Color>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>[enable]
+define(test,LUDO)
+
+{$LUA}
+getMainForm().CommentButton.doClick()
+{$ASM}
+
+[disable]
+
+</AssemblerScript>
+    </CheatEntry>
+  </CheatEntries>
+  <UserdefinedSymbols>
+    <SymbolEntry>
+      <Name>Recifense</Name>
+      <Address>20220409</Address>
+    </SymbolEntry>
+  </UserdefinedSymbols>
+  <Comments>===========================================
+ Game Title    : Hearts of Iron IV  (x64)
+ Game Version  : 1.11.10 (09ac) (No Step Back)
+ Game Sponsor  : TheSaviour + PF (DLCs)
+ Process Name  : hoit4.exe
+ Relevant Info : 64bits/RTS/New Engine
+ Script Version: 8.16 (for x64)(AOB)
+ CE Version    : 7.4
+ Release date  : 09-Apr-2022
+ Author        : Recifense
+ History:
+ 07-Jun-2019: First Release for 64bits (v1.7.0)(s7.0)(CE68)
+ 14-Jun-2019: Fix for some crashes + improve time to load the table(s7.1)
+ 23-Jun-2019: Fix for some Weak Foe (Ships) (s7.2)
+ 23-Jun-2019: Release for v1.7.1-f8d7 (Beta) (s7.3)
+ 24-Jun-2019: Release for v1.7.1-87c8 (Beta) (s7.4)
+ 03-Sep-2019: Fix for GM (s7.5)(CE70)
+ 22-Sep-2019: A script patch due to CE70 issue (s7.6)
+ 13-Nov-2019: Release for v1.8.0-3241 (s7.7)
+ 14-Nov-2019: Release for v1.8.1-aa59 (s7.8)
+ 01-Dec-2019: Fix for identifying the player (s7.9)
+ 19-Dec-2019: Fix GM for ships (s7.10)
+ 07-Feb-2020: Release for v1.8.2-ce2f (s7.11)
+ 27-Feb-2020: Release for v1.9.0-ab9c + new features (s8.0)
+ 02-Mar-2020: Fix Manpower (s8.1)
+ 09-Mar-2020: Added 4 new features(s8.2)
+ 10-Apr-2020: Release for v1.9.1-6d23 (s8.3)
+ 06-May-2020: Release for v1.9.2-a73d (s8.4)
+ 04-Jun-2020: Release for v1.9.3-a7a4  (s8.5)
+ 16-Oct-2020: Release for v1.10.1-dd56 (s8.6) (Battle for the Bosporus)
+ 12-Nov-2020: Release for v1.10.2-f82d (s8.7)
+ 26-Nov-2020: Release for v1.10.3-aa89 (s8.8) (AOB)
+ 07-Feb-2021: Release for v1.10.4-8878 (s8.9) (AOB)
+ 15-Apr-2021: Release for v1.10.5-502a (s8.10)(AOB)
+ 26-Nov-2021: Release for v1.11.2-7844 (s8.11) (No Step Back)
+ 15-Dec-2021: Release for v1.11.4-b22c (s8.12)
+ 30-Jan-2022: Release for v1.11.5-7e1e (s8.13)(CE7.4)
+ 17-Feb-2022: Release for v1.11.7-98bf (s8.14)(CE7.4)
+ 03-Apr-2022: Release for v1.11.9-3f99  (s8.15) (not finished)
+ 09-Apr-2022: Release for v1.11.10-09ac (s8.16) + New feature
+ Features:
+ - Minimum Political Points  (700)   [1]
+ - Minimum Natural Resources (250)   [2] (*)(***)
+ - Construction in 1 day             [3]
+ - Research in 1 day                 [4]
+ - Production in 1 day               [5]
+ - Move to adjacent region in 1 hour [6]
+ - God Mode (Army/Fleet)             [7]
+ - Minimum Manpower per State (7000) [8]
+ - Fill up player squadrons          [9] (s3.0)
+ - Weak Foe                          [A] (s4.0)
+ - Minimum Base Stability   (80%)    [B] (new)
+ - Minimum Base War Support (50%)    [C} (new)
+ - Finish Focus in 1 day             [D] (new) (s5.2)
+ - Refitting in 1 day                [E] (new) (s6.0)
+ - Minimum Army/Navy/Air XP (268)    [F] (new) (s6.0)
+ - Minimum Command Points   (68)     [G] (new) (s6.0)
+ - Agency Construction in 1 day      [H] (new) (s8.0)(La Resistance)
+ - Agency Upgrade in 1 day           [I] (new) (s8.0)(La Resistance)
+ - Operative Recruitment in 1 day    [J] (new) (s8.0)(La Resistance)
+ - Cipher Decrypting in 1 Day        [K] (new) (s8.0)(La Resistance)
+ - Deployment in 1 Day               [L] (new) (s8.2)
+ - Network Creation in 1 Days        [M] (new) (s8.2)(La Resistance)
+ - Intel Operation in 1 Day          [N] (new) (s8.2)(La Resistance)
+ - Each Operation Phase in 3 Days    [O] (new) (s8.2)(La Resistance)
+ - Each railway in 1 day             [P] (brand-new) (S8.16)
+ - Some Pointers                     [Q]
+===========================================
+[1] It will not go under 700;
+[2] It will not be lower than 250 (*)(***);
+[3] That's it;
+[4] That's it;
+[5] That's it;
+[6] Now every hour counts; :)
+[7] HP and Organization (Army and Navy);
+[8] It will not go under 7000;
+[9] The planes will replaced very quickly;
+[A] Battles involving the Human Player will end quickly (army/fleet);
+[B] Human player minimum base stability will be 80%; 
+[C] Human player minimum War Support will be 50%; 
+[D] That's it; :)
+[E] That's it; :)
+[F] It will not go under 268;
+[G] It will not go under 68;
+[H] That's it; :)
+[I] That's it; :)
+[J] That's it; :)
+[K] That's it; :)
+[L] At least, one item of each requirement should be available;
+[M] That's it; :)
+[N] That's it; :)
+[O] It depends on the available requirements and the Agency should be selected at least once after starting;
+[P] That's it; :)
+[Q] Not used at the table;
+(*) Let an hour pass so you can see the effect on the trade tab.
+(**)You have to look at the contruction tab once a day, preferably at 23:00. 
+(***) If you are using "Minimum Natural Resources (250)" and decides to load/play a different faction/Country, you HAVE to close the game and re-start CE and GAME. If you don't do that the previous faction natural resources will remain changed. The reason for that is that the game does not reflesh those numbers.  
+===========================================
+[USAGE]
+1) Run CE70 or greater;
+2) Run Game;
+3) Load the game process "hoi4.exe" in CE;
+4) Load this table and activate the main script;
+5) Now Activate the script of each cheat you want to use;
+6) Game On;
+===========================================
+HOTKEYS:
+None pre-defined
+===========================================
+[IMPORTANT]
+Save your game before using the cheats.
+===========================================
+[INFO]
+Tested on Win 10 64bits
+===========================================
+Cheers!</Comments>
+</CheatTable>
