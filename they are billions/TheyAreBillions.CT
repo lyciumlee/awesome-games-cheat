@@ -2,75 +2,6 @@
 <CheatTable CheatEngineTableVersion="42">
   <CheatEntries>
     <CheatEntry>
-      <ID>1</ID>
-      <Description>"infinite_money"</Description>
-      <VariableType>Auto Assembler Script</VariableType>
-      <AssemblerScript>{ Game   : TheyAreBillions.exe
-  Version: 
-  Date   : 2022-07-24
-  Author : lll
-
-  This script does blah blah blah
-}
-
-[ENABLE]
-
-aobscan(infinite_money,89 86 30 01 00 00 8B 8E 4C 01) // should be unique
-alloc(newmem,$1000,infinite_money)
-
-label(code)
-label(return)
-
-newmem:
-  mov eax, 0x6fffffff
-code:
-  mov [rsi+00000130],eax
-  jmp return
-
-infinite_money:
-  jmp newmem
-  nop
-return:
-registersymbol(infinite_money)
-
-[DISABLE]
-
-infinite_money:
-  db 89 86 30 01 00 00
-
-unregistersymbol(infinite_money)
-dealloc(newmem)
-
-{
-// ORIGINAL CODE - INJECTION POINT: ZX.ZXLevelState::#=ze1mRRS4=+7B
-
-ZX.ZXLevelState::#=ze1mRRS4=+5E: 8D 04 80              - lea eax,[rax+rax*4]
-ZX.ZXLevelState::#=ze1mRRS4=+61: C1 E0 03              - shl eax,03
-ZX.ZXLevelState::#=ze1mRRS4=+64: 81 F9 F0 D8 FF FF     - cmp ecx,FFFFD8F0
-ZX.ZXLevelState::#=ze1mRRS4=+6A: 7D 07                 - jnl ZX.ZXLevelState::#=ze1mRRS4=+73
-ZX.ZXLevelState::#=ze1mRRS4=+6C: B8 F0 D8 FF FF        - mov eax,FFFFD8F0
-ZX.ZXLevelState::#=ze1mRRS4=+71: EB 08                 - jmp ZX.ZXLevelState::#=ze1mRRS4=+7B
-ZX.ZXLevelState::#=ze1mRRS4=+73: 3B C8                 - cmp ecx,eax
-ZX.ZXLevelState::#=ze1mRRS4=+75: 7E 02                 - jle ZX.ZXLevelState::#=ze1mRRS4=+79
-ZX.ZXLevelState::#=ze1mRRS4=+77: EB 02                 - jmp ZX.ZXLevelState::#=ze1mRRS4=+7B
-ZX.ZXLevelState::#=ze1mRRS4=+79: 8B C1                 - mov eax,ecx
-// ---------- INJECTING HERE ----------
-ZX.ZXLevelState::#=ze1mRRS4=+7B: 89 86 30 01 00 00     - mov [rsi+00000130],eax
-// ---------- DONE INJECTING  ----------
-ZX.ZXLevelState::#=ze1mRRS4=+81: 48 8B 8E D8 00 00 00  - mov rcx,[rsi+000000D8]
-ZX.ZXLevelState::#=ze1mRRS4=+88: 33 C0                 - xor eax,eax
-ZX.ZXLevelState::#=ze1mRRS4=+8A: 89 41 08              - mov [rcx+08],eax
-ZX.ZXLevelState::#=ze1mRRS4=+8D: 48 83 C4 20           - add rsp,20
-ZX.ZXLevelState::#=ze1mRRS4=+91: 5B                    - pop rbx
-ZX.ZXLevelState::#=ze1mRRS4=+92: 5E                    - pop rsi
-ZX.ZXLevelState::#=ze1mRRS4=+93: 5F                    - pop rdi
-ZX.ZXLevelState::#=ze1mRRS4=+94: C3                    - ret 
-7FF87CD0C375: 00 00                 - add [rax],al
-7FF87CD0C377: 00 19                 - add [rcx],bl
-}
-</AssemblerScript>
-    </CheatEntry>
-    <CheatEntry>
       <ID>4</ID>
       <Description>"infinite_wood"</Description>
       <VariableType>Auto Assembler Script</VariableType>
@@ -206,6 +137,145 @@ dealloc(newmem)
 7FF87CD43BB8: 5F                    - pop rdi
 7FF87CD43BB9: C3                    - ret 
 7FF87CD43BBA: 00 00                 - add [rax],al
+}
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>1</ID>
+      <Description>"infinite_money"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{ Game   : TheyAreBillions.exe
+  Version: 
+  Date   : 2022-07-24
+  Author : lll
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscan(infinite_money,89 86 30 01 00 00 8B 8E 4C 01) // should be unique
+alloc(newmem,$1000,infinite_money)
+
+label(code)
+label(return)
+
+newmem:
+  mov eax, 0x6fffffff
+code:
+  mov [rsi+00000130],eax
+  jmp return
+
+infinite_money:
+  jmp newmem
+  nop
+return:
+registersymbol(infinite_money)
+
+[DISABLE]
+
+infinite_money:
+  db 89 86 30 01 00 00
+
+unregistersymbol(infinite_money)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: ZX.ZXLevelState::#=ze1mRRS4=+7B
+
+ZX.ZXLevelState::#=ze1mRRS4=+5E: 8D 04 80              - lea eax,[rax+rax*4]
+ZX.ZXLevelState::#=ze1mRRS4=+61: C1 E0 03              - shl eax,03
+ZX.ZXLevelState::#=ze1mRRS4=+64: 81 F9 F0 D8 FF FF     - cmp ecx,FFFFD8F0
+ZX.ZXLevelState::#=ze1mRRS4=+6A: 7D 07                 - jnl ZX.ZXLevelState::#=ze1mRRS4=+73
+ZX.ZXLevelState::#=ze1mRRS4=+6C: B8 F0 D8 FF FF        - mov eax,FFFFD8F0
+ZX.ZXLevelState::#=ze1mRRS4=+71: EB 08                 - jmp ZX.ZXLevelState::#=ze1mRRS4=+7B
+ZX.ZXLevelState::#=ze1mRRS4=+73: 3B C8                 - cmp ecx,eax
+ZX.ZXLevelState::#=ze1mRRS4=+75: 7E 02                 - jle ZX.ZXLevelState::#=ze1mRRS4=+79
+ZX.ZXLevelState::#=ze1mRRS4=+77: EB 02                 - jmp ZX.ZXLevelState::#=ze1mRRS4=+7B
+ZX.ZXLevelState::#=ze1mRRS4=+79: 8B C1                 - mov eax,ecx
+// ---------- INJECTING HERE ----------
+ZX.ZXLevelState::#=ze1mRRS4=+7B: 89 86 30 01 00 00     - mov [rsi+00000130],eax
+// ---------- DONE INJECTING  ----------
+ZX.ZXLevelState::#=ze1mRRS4=+81: 48 8B 8E D8 00 00 00  - mov rcx,[rsi+000000D8]
+ZX.ZXLevelState::#=ze1mRRS4=+88: 33 C0                 - xor eax,eax
+ZX.ZXLevelState::#=ze1mRRS4=+8A: 89 41 08              - mov [rcx+08],eax
+ZX.ZXLevelState::#=ze1mRRS4=+8D: 48 83 C4 20           - add rsp,20
+ZX.ZXLevelState::#=ze1mRRS4=+91: 5B                    - pop rbx
+ZX.ZXLevelState::#=ze1mRRS4=+92: 5E                    - pop rsi
+ZX.ZXLevelState::#=ze1mRRS4=+93: 5F                    - pop rdi
+ZX.ZXLevelState::#=ze1mRRS4=+94: C3                    - ret 
+7FF87CD0C375: 00 00                 - add [rax],al
+7FF87CD0C377: 00 19                 - add [rcx],bl
+}
+</AssemblerScript>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>7</ID>
+      <Description>"infinite steel"</Description>
+      <VariableType>Auto Assembler Script</VariableType>
+      <AssemblerScript>{ Game   : TheyAreBillions.exe
+  Version: 
+  Date   : 2022-07-28
+  Author : lll
+
+  This script does blah blah blah
+}
+
+[ENABLE]
+
+aobscan(steel,89 86 28 01 00 00 48 8B 8E D8) // should be unique
+alloc(newmem,$1000,steel)
+
+label(code)
+label(return)
+
+newmem:
+
+code:
+  mov eax, 0x6fffffff
+  mov [rsi+00000128],eax
+  jmp return
+
+steel:
+  jmp newmem
+  nop
+return:
+registersymbol(steel)
+
+[DISABLE]
+
+steel:
+  db 89 86 28 01 00 00
+
+unregistersymbol(steel)
+dealloc(newmem)
+
+{
+// ORIGINAL CODE - INJECTION POINT: 7FF87CB1F8AF
+
+7FF87CB1F893: 03 8E 28 01 00 00     - add ecx,[rsi+00000128]
+7FF87CB1F899: 8B 86 38 01 00 00     - mov eax,[rsi+00000138]
+7FF87CB1F89F: 85 C9                 - test ecx,ecx
+7FF87CB1F8A1: 7D 04                 - jnl 7FF87CB1F8A7
+7FF87CB1F8A3: 33 C0                 - xor eax,eax
+7FF87CB1F8A5: EB 08                 - jmp 7FF87CB1F8AF
+7FF87CB1F8A7: 3B C8                 - cmp ecx,eax
+7FF87CB1F8A9: 7E 02                 - jle 7FF87CB1F8AD
+7FF87CB1F8AB: EB 02                 - jmp 7FF87CB1F8AF
+7FF87CB1F8AD: 8B C1                 - mov eax,ecx
+// ---------- INJECTING HERE ----------
+7FF87CB1F8AF: 89 86 28 01 00 00     - mov [rsi+00000128],eax
+// ---------- DONE INJECTING  ----------
+7FF87CB1F8B5: 48 8B 8E D8 00 00 00  - mov rcx,[rsi+000000D8]
+7FF87CB1F8BC: 33 C0                 - xor eax,eax
+7FF87CB1F8BE: 89 41 08              - mov [rcx+08],eax
+7FF87CB1F8C1: 48 83 C4 28           - add rsp,28
+7FF87CB1F8C5: 5B                    - pop rbx
+7FF87CB1F8C6: 5D                    - pop rbp
+7FF87CB1F8C7: 5E                    - pop rsi
+7FF87CB1F8C8: 5F                    - pop rdi
+7FF87CB1F8C9: C3                    - ret 
+7FF87CB1F8CA: 00 00                 - add [rax],al
 }
 </AssemblerScript>
     </CheatEntry>
